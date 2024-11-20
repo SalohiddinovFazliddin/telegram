@@ -1,5 +1,10 @@
 <?php
 
+
+require 'vendor/autoload.php';
+use GuzzleHttp\Client;
+
+
 class  Currency{
 
     const CURRENCY_API_URL = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
