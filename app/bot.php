@@ -5,13 +5,14 @@ ini_set('display_startup_errors', 1);
 
 require 'src/Bot.php';
 
-$bot_token = '7638459284:AAE_9q_rqPFun5xt04Fbk0tmAO_mDVzKlnI';
+$bot_token = '7638459284:AAE_9q_rqPFun5xt04Fbk0tmAO_mDVzKlnI'; // Tokeningizni kiriting
 $bot = new Bot($bot_token);
 
 $update = json_decode(file_get_contents('php://input'), TRUE);
 
 $text = isset($update['message']['text']) ? $update['message']['text'] : '';
 $from_id = isset($update['message']['from']['id']) ? $update['message']['from']['id'] : '';
+$username = isset($update['message']['from']['username']) ? $update['message']['from']['username'] : '';
 
 function sendMessage($chat_id, $message) {
     global $bot_token;
@@ -31,8 +32,14 @@ function sendMessage($chat_id, $message) {
 }
 
 if ($text == "/start") {
-    $response = "Salom! Men sizga valyuta kurslarini yubora olishim mumkin. Faqat /currency komandasini yuboring.";
-    sendMessage($from_id, $response);
+    // Foydalanuvchini saqlash
+    if ($bot->saveUser($from_id, $username)) {
+        $response = "Salom! Men sizga valyuta kurslarini yubora olishim mumkin. Faqat /currency komandasini yuboring.";
+        sendMessage($from_id, $response);
+    } else {
+        $response = "Siz allaqachon ro'yxatdan o'tgansiz!";
+        sendMessage($from_id, $response);
+    }
 }
 
 if ($text == "/currency") {
@@ -64,8 +71,7 @@ if (strpos($text, "/weather") === 0) {
         $response = "Iltimos, shahar nomini kiriting. Masalan: /weather Toshkent";
         sendMessage($from_id, $response);
     } else {
-        $api_key = 'https://api.openweathermap.org/data/2.5/weather?q=Toshkent&appid=your_api_key&units=metric&lang=uz
-'; //api
+        $api_key = 'your_openweather_api_key'; // O'zingizning API kalitingizni kiriting
         $api_url = "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api_key&units=metric&lang=uz";
 
         $ch = curl_init($api_url);
@@ -93,5 +99,4 @@ if (strpos($text, "/weather") === 0) {
         }
     }
 }
-
 ?>
